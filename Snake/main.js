@@ -37,21 +37,25 @@ function keyDown(e) {
     console.log(e);
     switch (e.keyCode) {
         case 38: //38 = up
+        case 87: //87 = w
             if (snake.direction != 3) {
                 snake.direction = 1;
             }
             break;
         case 39: //39 = right
+        case 68: //39 = d
             if (snake.direction != 4) {
                 snake.direction = 2;
             }
             break;
         case 40: //40 = down
+        case 83: //40 = s
             if (snake.direction != 1) {
                 snake.direction = 3;
             }
             break;
         case 37: //37 = left
+        case 65: //37 = a
             if (snake.direction != 2) {
                 snake.direction = 4;
             }
