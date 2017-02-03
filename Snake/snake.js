@@ -4,7 +4,7 @@ function Snake() {
     this.rects = [];
     this.direction = 4; //1=up, 2=right, 3=down, 4=left
 
-    this.loadDefaultSnake = function() {
+    this.loadDefaultSnake = function () {
         this.rects.push(new createjs.Shape());
         this.rects[this.rects.length - 1].graphics.beginFill(this.color).drawRect(0, 0, this.size, this.size);
         this.rects[this.rects.length - 1].x = stage.canvas.width / 2 - 3 * this.size;
@@ -23,15 +23,16 @@ function Snake() {
         this.direction = 4;
     };
 
-    this.addRect = function() {
+    this.addRect = function () {
         this.rects.push(new createjs.Shape());
         this.rects[this.rects.length - 1].graphics.beginFill(this.color).drawRect(0, 0, this.size, this.size);
-        this.rects[this.rects.length - 1].x = this.rects[this.rects.length - 1].x + this.size;
-        this.rects[this.rects.length - 1].y = this.rects[this.rects.length - 1].y + this.size;
+        // first set is out of bounds so that no flickr appears
+        this.rects[this.rects.length - 1].x = -this.size;
+        this.rects[this.rects.length - 1].y = -this.size;
         stage.addChild(this.rects[this.rects.length - 1]);
     };
 
-    this.move = function() {
+    this.move = function () {
         //every rect should be set to the one before him
         for (i = this.rects.length - 1; i >= 1; i--) {
             this.rects[i].x = this.rects[i - 1].x;
@@ -39,18 +40,18 @@ function Snake() {
         }
         //rect 0 should get a new position
         switch (this.direction) {
-            case 1: //up
-                this.rects[0].y -= this.size;
-                break;
-            case 2: //right
-                this.rects[0].x += this.size;
-                break;
-            case 3: //down
-                this.rects[0].y += this.size;
-                break;
-            case 4: //left
-                this.rects[0].x -= this.size;
-                break;
+        case 1: //up
+            this.rects[0].y -= this.size;
+            break;
+        case 2: //right
+            this.rects[0].x += this.size;
+            break;
+        case 3: //down
+            this.rects[0].y += this.size;
+            break;
+        case 4: //left
+            this.rects[0].x -= this.size;
+            break;
         }
     }
 }
