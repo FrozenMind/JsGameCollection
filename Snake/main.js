@@ -35,7 +35,11 @@ function tick(event) {
     stage.update();
     snake.move();
     checkFoodHit();
-    checkLoss();
+    if (IsGameLost()) {
+        console.log("you lost. Your Score is: " + snake.rects.length);
+        $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
+        createjs.Ticker.paused = true;
+    }
 }
 
 //if key is pressed
@@ -78,12 +82,25 @@ function checkFoodHit() {
     }
 }
 
-//check if snake is out of window
-function checkLoss() {
+//check if game is lost
+function IsGameLost() {
 
-    if (snake.rects[0].y < 0 || snake.rects[0].y + snake.size > stage.canvas.height || snake.rects[0].x < 0 || snake.rects[0].x + snake.size > stage.canvas.width) {
-        console.log("you lost. Your Score is: " + snake.rects.length);
-        $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
-        createjs.Ticker.paused = true;
+    var headPosX = snake.rects[0].x;
+    var headPosY = snake.rects[0].y;
+
+    // true if snake hits a wall
+    var wallHitted = headPosY < 0 || // top wall
+        headPosY + snake.size > stage.canvas.height || // bottom wall
+        headPosX < 0 || // left wall
+        headPosX + snake.size > stage.canvas.width; // right wall
+
+    // true if snake hits itself
+    var selfHitted = false;
+    for (var i = 2; i < snake.rects.length; i++) {
+        selfHitted = headPosX == snake.rects[i].x && headPosY == snake.rects[i].y;
+        if (selfHitted)
+            break;
     }
+
+    return wallHitted || selfHitted;
 }
