@@ -1,8 +1,11 @@
 var stage;
 var snake;
 var food;
+var running;
 
-init();
+$(document).ready(function () {
+    init();
+});
 
 function init() {
     //init stage
@@ -25,11 +28,14 @@ function init() {
     document.addEventListener("keydown", keyDown, false);
 }
 
-function tick() {
+function tick(event) {
+    if (event.paused)
+        return;
+
+    stage.update();
     snake.move();
     checkFoodHit();
     checkLoss();
-    stage.update();
 }
 
 //if key is pressed
@@ -77,7 +83,7 @@ function checkLoss() {
 
     if (snake.rects[0].y < 0 || snake.rects[0].y + snake.size > stage.canvas.height || snake.rects[0].x < 0 || snake.rects[0].x + snake.size > stage.canvas.width) {
         console.log("you lost. Your Score is: " + snake.rects.length);
-        //alert("you lost. Your Score is: " + snake.rects.length);
-        init();
+        $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
+        createjs.Ticker.paused = true;
     }
 }
