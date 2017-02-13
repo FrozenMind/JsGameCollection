@@ -1,12 +1,15 @@
 function Snake() {
     this.color = "#ffffff"; //white snake
+    this.headColor = "#ff0000"; //head is read
     this.size = 20;
     this.rects = [];
     this.direction = 4; //1=up, 2=right, 3=down, 4=left
+    this.speed = 15;  //speed can be max fps count
+    this.readyToMove = true;
 
     this.loadDefaultSnake = function () {
         this.rects.push(new createjs.Shape());
-        this.rects[this.rects.length - 1].graphics.beginFill(this.color).drawRect(0, 0, this.size, this.size);
+        this.rects[this.rects.length - 1].graphics.beginFill(this.headColor).drawRect(0, 0, this.size, this.size);
         this.rects[this.rects.length - 1].x = stage.canvas.width / 2 - 3 * this.size;
         this.rects[this.rects.length - 1].y = stage.canvas.height / 2;
         stage.addChild(this.rects[this.rects.length - 1]);
@@ -53,5 +56,13 @@ function Snake() {
             this.rects[0].x -= this.size;
             break;
         }
-    }
+        this.readyToMove = true;
+    };
+
+    //calculate the speed by the size of the snake
+    this.calcSpeed = function(){
+        if(this.speed > 3){
+          this.speed = 15 - Math.floor(this.rects.length / 3);
+        }
+    };
 }
