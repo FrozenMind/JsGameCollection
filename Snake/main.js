@@ -5,7 +5,7 @@ var running;
 var speedCounter = 0;
 var fps;
 
-$(document).ready(function () {
+$(document).ready(function() {
     init();
 });
 
@@ -14,7 +14,7 @@ function init() {
     //init stage
     stage = new createjs.Stage("gameArea");
     stage.canvas.style.background = "#000000" //black background
-        //create Snake with a little snake to start
+    //create Snake with a little snake to start
     snake = new Snake();
     snake.loadDefaultSnake();
     //create food rect
@@ -35,50 +35,50 @@ function tick(event) {
     if (event.paused)
         return;
 
-    if(speedCounter >= snake.speed){
-      speedCounter = 0;
-      snake.move();
-      stage.update();
-      snake.calcSpeed();
-      checkFoodHit();
-      isGameLost();
+    if (speedCounter >= snake.speed) {
+        speedCounter = 0;
+        snake.move();
+        stage.update();
+        snake.calcSpeed();
+        checkFoodHit();
+        isGameLost();
     }
-    speedCounter ++;
+    speedCounter++;
 }
 
 //if key is pressed
 function keyDown(e) {
-    if(snake.readyToMove){
-      switch (e.keyCode) {
-      case 38: //38 = up
-      case 87: //87 = w
-          if (snake.direction != 3) {
-              snake.direction = 1;
-              snake.readyToMove = false;
-          }
-          break;
-      case 39: //39 = right
-      case 68: //39 = d
-          if (snake.direction != 4) {
-              snake.direction = 2;
-              snake.readyToMove = false;
-          }
-          break;
-      case 40: //40 = down
-      case 83: //40 = s
-          if (snake.direction != 1) {
-              snake.direction = 3;
-              snake.readyToMove = false;
-          }
-          break;
-      case 37: //37 = left
-      case 65: //37 = a
-          if (snake.direction != 2) {
-              snake.direction = 4;
-              snake.readyToMove = false;
-          }
-          break;
-      }
+    if (snake.readyToMove) {
+        switch (e.keyCode) {
+            case 38: //38 = up
+            case 87: //87 = w
+                if (snake.direction != 3) {
+                    snake.direction = 1;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 39: //39 = right
+            case 68: //39 = d
+                if (snake.direction != 4) {
+                    snake.direction = 2;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 40: //40 = down
+            case 83: //40 = s
+                if (snake.direction != 1) {
+                    snake.direction = 3;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 37: //37 = left
+            case 65: //37 = a
+                if (snake.direction != 2) {
+                    snake.direction = 4;
+                    snake.readyToMove = false;
+                }
+                break;
+        }
     }
 }
 
@@ -111,9 +111,10 @@ function isGameLost() {
             break;
     }
 
-    if(wallHitted || selfHitted){
-      createjs.Ticker.paused = true;
-      console.log("you lost. Your Score is: " + snake.rects.length);
-      $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
+    if (wallHitted || selfHitted) {
+        createjs.Ticker.paused = true;
+        $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
+    } else {
+        $("#ResultScore").html("<b>Score: " + snake.rects.length + "</b>")
     }
 }
