@@ -14,21 +14,29 @@ function init() {
     //init stage
     stage = new createjs.Stage("gameArea");
     stage.canvas.style.background = "#000000" //black background
-    //create Snake with a little snake to start
+    //create ticker
+    createjs.Ticker.addEventListener("tick", tick);
+    createjs.Ticker.setFPS(fps); //in this game fps means snake speed
+    createjs.Ticker.paused = true;
+    //add key event listener
+    document.addEventListener("keydown", keyDown, false);
+}
+
+function start() {
+    stage.removeAllChildren();
+    //create snake and load default
     snake = new Snake();
     snake.loadDefaultSnake();
     //create food rect
     food = new createjs.Shape();
-    food.graphics.beginFill(snake.color).drawRect(0, 0, snake.size, snake.size);
+    food.graphics.beginFill('#ffffff').drawRect(0, 0, snake.size, snake.size);
     //start location is on top half to make sure its not on snake
     food.x = Math.floor(Math.random() * (stage.canvas.width / snake.size)) * snake.size;
     food.y = Math.floor(Math.random() * (stage.canvas.height / snake.size)) * snake.size;
     stage.addChild(food);
-    //create ticker
-    createjs.Ticker.addEventListener("tick", tick);
-    createjs.Ticker.setFPS(fps); //in this game fps means snake speed
-    //add key event listener
-    document.addEventListener("keydown", keyDown, false);
+    //set food in background
+    stage.setChildIndex(food, 0);
+    createjs.Ticker.paused = false;
 }
 
 function tick(event) {
@@ -48,37 +56,42 @@ function tick(event) {
 
 //if key is pressed
 function keyDown(e) {
-    if (snake.readyToMove) {
-        switch (e.keyCode) {
-            case 38: //38 = up
-            case 87: //87 = w
-                if (snake.direction != 3) {
-                    snake.direction = 1;
-                    snake.readyToMove = false;
-                }
-                break;
-            case 39: //39 = right
-            case 68: //39 = d
-                if (snake.direction != 4) {
-                    snake.direction = 2;
-                    snake.readyToMove = false;
-                }
-                break;
-            case 40: //40 = down
-            case 83: //40 = s
-                if (snake.direction != 1) {
-                    snake.direction = 3;
-                    snake.readyToMove = false;
-                }
-                break;
-            case 37: //37 = left
-            case 65: //37 = a
-                if (snake.direction != 2) {
-                    snake.direction = 4;
-                    snake.readyToMove = false;
-                }
-                break;
+    if (!createjs.Ticker.paused) {
+        if (snake.readyToMove) {
+            switch (e.keyCode) {
+                case 38: //38 = up
+                case 87: //87 = w
+                    if (snake.direction != 3) {
+                        snake.direction = 1;
+                        snake.readyToMove = false;
+                    }
+                    break;
+                case 39: //39 = right
+                case 68: //39 = d
+                    if (snake.direction != 4) {
+                        snake.direction = 2;
+                        snake.readyToMove = false;
+                    }
+                    break;
+                case 40: //40 = down
+                case 83: //40 = s
+                    if (snake.direction != 1) {
+                        snake.direction = 3;
+                        snake.readyToMove = false;
+                    }
+                    break;
+                case 37: //37 = left
+                case 65: //37 = a
+                    if (snake.direction != 2) {
+                        snake.direction = 4;
+                        snake.readyToMove = false;
+                    }
+                    break;
+            }
         }
+    } else {
+        //press any key to start
+        start();
     }
 }
 
@@ -111,10 +124,11 @@ function isGameLost() {
             break;
     }
 
+    var score = (snake.rects.length - 3)
     if (wallHitted || selfHitted) {
         createjs.Ticker.paused = true;
-        $("#ResultScore").html("<b>You lost. Your Score is: " + snake.rects.length + "</b>")
+        $("#ResultScore").html("<b>You lost. Your Score is: " + score + "</b>")
     } else {
-        $("#ResultScore").html("<b>Score: " + snake.rects.length + "</b>")
+        $("#ResultScore").html("<b>Score: " + score + "</b>")
     }
 }
