@@ -5,6 +5,7 @@ var running;
 var speedCounter = 0;
 var fps;
 var score = 0;
+var textOverlay;
 
 $(document).ready(function () {
     init();
@@ -19,6 +20,21 @@ function init() {
     createjs.Ticker.addEventListener("tick", tick);
     createjs.Ticker.setFPS(fps); //in this game fps means snake speed
     createjs.Ticker.paused = true;
+
+    // Overlay 
+    textOverlay = new createjs.Text();
+    textOverlay.set({
+        text: "Press any key to start",
+        font: "24px Arial",
+        color: "#ffffff",
+        textAlign: "center",
+        textBaseline: "middle",
+        x: stage.canvas.width / 2,
+        y: stage.canvas.height / 2
+    });
+    stage.addChild(textOverlay);
+    stage.update();
+
     //add key event listener
     document.addEventListener("keydown", keyDown, false);
 }
@@ -127,6 +143,8 @@ function isGameLost() {
 
     if (wallHitted || selfHitted) {
         createjs.Ticker.paused = true;
+        stage.addChild(textOverlay);
+        stage.update();
         $("#ResultScore").html("<b>You lost. Your Score is: " + score + "</b>")
     } else {
         $("#ResultScore").html("<b>Score: " + score + "</b>")
