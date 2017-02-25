@@ -4,8 +4,9 @@ var food;
 var running;
 var speedCounter = 0;
 var fps;
+var score = 0;
 
-$(document).ready(function() {
+$(document).ready(function () {
     init();
 });
 
@@ -14,7 +15,7 @@ function init() {
     //init stage
     stage = new createjs.Stage("gameArea");
     stage.canvas.style.background = "#000000" //black background
-    //create ticker
+        //create ticker
     createjs.Ticker.addEventListener("tick", tick);
     createjs.Ticker.setFPS(fps); //in this game fps means snake speed
     createjs.Ticker.paused = true;
@@ -29,7 +30,7 @@ function start() {
     snake.loadDefaultSnake();
     //create food rect
     food = new createjs.Shape();
-    food.graphics.beginFill('#ffffff').drawRect(0, 0, snake.size, snake.size);
+    food.graphics.beginFill('#006600').drawRect(0, 0, snake.size, snake.size);
     //start location is on top half to make sure its not on snake
     food.x = Math.floor(Math.random() * (stage.canvas.width / snake.size)) * snake.size;
     food.y = Math.floor(Math.random() * (stage.canvas.height / snake.size)) * snake.size;
@@ -59,34 +60,34 @@ function keyDown(e) {
     if (!createjs.Ticker.paused) {
         if (snake.readyToMove) {
             switch (e.keyCode) {
-                case 38: //38 = up
-                case 87: //87 = w
-                    if (snake.direction != 3) {
-                        snake.direction = 1;
-                        snake.readyToMove = false;
-                    }
-                    break;
-                case 39: //39 = right
-                case 68: //39 = d
-                    if (snake.direction != 4) {
-                        snake.direction = 2;
-                        snake.readyToMove = false;
-                    }
-                    break;
-                case 40: //40 = down
-                case 83: //40 = s
-                    if (snake.direction != 1) {
-                        snake.direction = 3;
-                        snake.readyToMove = false;
-                    }
-                    break;
-                case 37: //37 = left
-                case 65: //37 = a
-                    if (snake.direction != 2) {
-                        snake.direction = 4;
-                        snake.readyToMove = false;
-                    }
-                    break;
+            case 38: //38 = up
+            case 87: //87 = w
+                if (snake.direction != 3) {
+                    snake.direction = 1;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 39: //39 = right
+            case 68: //39 = d
+                if (snake.direction != 4) {
+                    snake.direction = 2;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 40: //40 = down
+            case 83: //40 = s
+                if (snake.direction != 1) {
+                    snake.direction = 3;
+                    snake.readyToMove = false;
+                }
+                break;
+            case 37: //37 = left
+            case 65: //37 = a
+                if (snake.direction != 2) {
+                    snake.direction = 4;
+                    snake.readyToMove = false;
+                }
+                break;
             }
         }
     } else {
@@ -100,8 +101,8 @@ function checkFoodHit() {
     if (food.y == snake.rects[0].y && food.x == snake.rects[0].x) {
         food.x = Math.floor(Math.random() * (stage.canvas.width / snake.size)) * snake.size;
         food.y = Math.floor(Math.random() * (stage.canvas.height / snake.size)) * snake.size;
-        console.log("new food at: " + food.x + " " + food.y);
         snake.addRect();
+        score++;
     }
 }
 
@@ -124,7 +125,6 @@ function isGameLost() {
             break;
     }
 
-    var score = (snake.rects.length - 3)
     if (wallHitted || selfHitted) {
         createjs.Ticker.paused = true;
         $("#ResultScore").html("<b>You lost. Your Score is: " + score + "</b>")
