@@ -24,7 +24,7 @@ function init() {
     // Overlay 
     textOverlay = new createjs.Text();
     textOverlay.set({
-        text: "Press any key to start",
+        text: "Press any key to start \n Use arrow keys or WASD to move!",
         font: "24px Arial",
         color: "#ffffff",
         textAlign: "center",
