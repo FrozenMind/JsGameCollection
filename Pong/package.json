@@ -1,0 +1,15 @@
+{
+  "name": "pong",
+  "version": "1.0.0",
+  "description": "pong game vs npc",
+  "main": "serverMain.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "www.github.com/FrozenMind/Pong"
+  },
+  "author": "Valentin Rebscher",
+  "license": "MIT"
+}
