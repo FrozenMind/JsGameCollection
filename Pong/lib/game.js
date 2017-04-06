@@ -1,3 +1,5 @@
+//Game File to create gameobject 
+
 module.exports = Game;
 
 var Game = function(socket1, socket2) {
