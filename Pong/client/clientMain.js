@@ -1,21 +1,27 @@
 //client main file
+var socket = undefined;
 
-function onInitGame() {
-    //TODO: initalize game area and draw start objects
-}
+$(document).ready(function() {
+    socket = io.connect('81.169.173.33:69001');
+});
 
 function onKeyDown() {
     //TODO: if up or down pressed tell server what key is pressed
+    socket.emit('key', data);
 }
 
-function onGameObjectReceived() {
+socket.on('initGame', function(data) {
+    //TODO: initalize game area and draw start objects
+});
+
+socket.on('gameObjectReceived', function(data) {
     //TODO: draw game out of objects
-}
+});
 
-function onCounter() {
+socket.on('counter', function(data) {
     //TODO: draw counter
-}
+});
 
-function onGoal() {
+socket.on('goal', function(data) {
     //TODO: play goal animation
-}
+});
