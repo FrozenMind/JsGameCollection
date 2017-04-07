@@ -7,11 +7,6 @@ $(document).ready(function() {
 
 function initSocket() {
     socket = io();
-    socket.emit('test', "hallo");
-
-    socket.on('test', function(data) {
-        console.log("test received: " + data);
-    });
 
     socket.on('initGame', function(data) {
         //TODO: initalize game area and draw start objects

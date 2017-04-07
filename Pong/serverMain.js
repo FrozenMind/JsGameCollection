@@ -37,10 +37,6 @@ app.get('/', function(req, res) {
 //connection between server and website (http server)
 io.on('connection', function(socket) {
     log.debug(socket.handshake.address + " connected.");
-    socket.on('test', function(data) {
-        log.debug(data);
-        socket.emit('test', "echo: " + data);
-    });
     //on socket disconnect
     socket.on("disconnect", function(data) {
         log.debug("User disconnected from HTTP");
@@ -49,12 +45,16 @@ io.on('connection', function(socket) {
     socket.on("error", function(err) {
         log.error(err);
     });
+
+    //##################
+    //#pong game events#
+    //##################
+    //ready event
+    socket.on("ready", function(err) {
+        log.error(err);
+    });
 });
 
 function onKeyDown() {
     //TODO: tell game to moveplayer
-}
-
-function onReady() {
-    //TODO: if both are ready start game
 }
