@@ -2,6 +2,10 @@
 
 var bunyan = require('bunyan');
 var net = require('net');
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var game = require('./lib/game.js');
 
 
@@ -19,28 +23,32 @@ var log = bunyan.createLogger({
     }]
 });
 
-//TCP Server erzeugen!
-server = net.createServer(function(sck) {
-    log.debug("Client connected to TCP Server");
-    //on data received
-    sck.on('data', function(data) {
-        log.debug(data);
-    });
-    //on socket disconnect
-    sck.on("end", function() {
-        log.debug("Client disconnected from TCP Server");
-    });
-    //on socket error (i.e. socket disconnect without closing)
-    sck.on('error', function(sckErr) {
-        log.error(sckErr);
-    });
-}).listen(69001, function() {
-    log.debug("TCP Server listening on Port 69001");
+//start HTTP Server
+http.listen(59001, function() {
+    log.info('HTTP Server listening on Port 59001');
 });
 
-//TCP Server Error
-server.on("error", function(err) {
-    log.error(err);
+//on User Connection to HTTP Server send Website
+app.get('/', function(req, res) {
+    app.use(express.static('public'));
+    res.sendFile(__dirname + '/public/index.html');
+});
+
+//connection between server and website (http server)
+io.on('connection', function(socket) {
+    log.debug(socket.handshake.address + " connected.");
+    socket.on('test', function(data) {
+        log.debug(data);
+        socket.emit('test', "echo: " + data);
+    });
+    //on socket disconnect
+    socket.on("disconnect", function(data) {
+        log.debug("User disconnected from HTTP");
+    });
+    //on socket error
+    socket.on("error", function(err) {
+        log.error(err);
+    });
 });
 
 function onKeyDown() {
