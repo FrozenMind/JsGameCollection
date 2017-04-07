@@ -8,7 +8,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var game = require('./lib/game.js');
 
+var searchQueue;
+var games = [];
 
+//create logger
 var log = bunyan.createLogger({
     name: 'ESPServerLogger',
     streams: [{
@@ -38,20 +41,27 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
     log.debug(socket.handshake.address + " connected.");
     //on socket disconnect
-    socket.on("disconnect", function(data) {
+    socket.on('disconnect', function(data) {
         log.debug("User disconnected from HTTP");
     });
     //on socket error
-    socket.on("error", function(err) {
+    socket.on('error', function(err) {
         log.error(err);
     });
 
     //##################
     //#pong game events#
     //##################
-    //ready event
-    socket.on("ready", function(err) {
-        log.error(err);
+    socket.on('search', function(data) {
+        socket.name = data.name;
+        log.debug(socket.name + " started Searching");
+        searchQueue.push(socket);
+    });
+    socket.on('ready', function(data) {
+        log.debug(socket.name + " is ready");
+    });
+    socket.on('keyDown', function(data) {
+        log.debug(socket.name + " pressed " + data.key); //up = 38, down = 40
     });
 });
 
