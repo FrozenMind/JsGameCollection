@@ -14,7 +14,7 @@ $(document).ready(function() {
 });
 
 function initStage() {
-    stage = new createjs.Stage('gameCanvas');
+    stage = new createjs.Stage('gameArea');
     stage.canvas.style.background = "#ffffff";
     width = stage.canvas.width;
     height = stage.canvas.height;
@@ -30,11 +30,16 @@ function initStage() {
     rect_ball = new createjs.Shape();
     rect_ball.x = width / 2;
     rect_ball.y = height / 2;
-    rect_ball.graphics.beginFill("#000000").drawCirecle(0, 0, 10);
+    rect_ball.graphics.beginFill("#000000").drawCircle(0, 0, 10);
     btn_search = new createjs.Shape();
     btn_search.x = 0;
     btn_search.y = 0;
     btn_search.graphics.beginFill("#ff0000").drawRect(0, 0, 200, 50);
+    btn_search.addEventListener('click', function(event) {
+        if ($("#nameInput").val() != "") {
+            socket.emit('search', $("#nameInput").val());
+        }
+    });
     btn_ready = new createjs.Shape();
     btn_ready.x = 0;
     btn_ready.y = 0;
@@ -44,8 +49,8 @@ function initStage() {
         text: "Start Search For Opponent",
         font: "12px Arial",
         color: "#000000",
-        x: 0,
-        y: 0
+        x: 10,
+        y: 10
     });
     txt_score = new createjs.Text(); //score of player one : score of player two
     txt_score.set({
@@ -71,6 +76,9 @@ function initStage() {
         x: 0,
         y: 0
     });
+    stage.addChild(btn_search);
+    stage.addChild(txt_status);
+    stage.update();
 }
 
 function initSocket() {
@@ -90,6 +98,21 @@ function initSocket() {
 
     socket.on('goal', function(data) {
         //TODO: play goal animation
+    });
+
+    socket.on('searchRes', function(data) {
+        if (data == 1) { //1 = please wait, 0 = ready
+            stage.removeChild(btn_search);
+            txt_status.text = "Please Wait For Opponent..."
+            stage.update();
+        } else {
+            stage.removeChild(btn_search);
+            stage.removeChild(txt_status);
+            txt_status.text = "Press to ready..."
+            stage.addChild(btn_ready);
+            stage.addChild(txt_status);
+            stage.update();
+        }
     });
 }
 
