@@ -8,7 +8,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var game = require('./lib/game.js');
 
-var searchQueue;
+var searchQueue = [];
 var games = [];
 
 //create logger
@@ -53,9 +53,15 @@ io.on('connection', function(socket) {
     //#pong game events#
     //##################
     socket.on('search', function(data) {
-        socket.name = data.name;
+        socket.name = data;
         log.debug(socket.name + " started Searching");
         searchQueue.push(socket);
+        if (searchQueue >= 2) { //1 = please wait, 0 = ready
+            socket.emit('searchRes', 0);
+            //TODO: start game with 2 players
+        } else {
+            socket.emit('searchRes', 1);
+        }
     });
     socket.on('ready', function(data) {
         log.debug(socket.name + " is ready");
