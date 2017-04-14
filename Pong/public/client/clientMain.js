@@ -18,6 +18,8 @@ function initStage() {
     stage.canvas.style.background = "#ffffff";
     width = stage.canvas.width;
     height = stage.canvas.height;
+    playerWidth = 20;
+    playerHeight = 100;
     //create objects to draw game
     rect_player1 = new createjs.Shape();
     rect_player1.x = playerWidth * 2;
@@ -44,6 +46,10 @@ function initStage() {
     btn_ready.x = 0;
     btn_ready.y = 0;
     btn_ready.graphics.beginFill("#ff0000").drawRect(0, 0, 200, 50);
+    btn_ready.addEventListener('click', function(event) {
+        socket.emit('ready', 1);
+
+    });
     txt_status = new createjs.Text(); //waiting for player or wait till player is ready or start search
     txt_status.set({
         text: "Start Search For Opponent",
@@ -103,14 +109,31 @@ function initSocket() {
     socket.on('searchRes', function(data) {
         if (data == 1) { //1 = please wait, 0 = ready
             stage.removeChild(btn_search);
-            txt_status.text = "Please Wait For Opponent..."
+            txt_status.text = "Please Wait For Opponent...";
             stage.update();
         } else {
+            console.log('Enemy found.')
             stage.removeChild(btn_search);
             stage.removeChild(txt_status);
             txt_status.text = "Press to ready..."
             stage.addChild(btn_ready);
             stage.addChild(txt_status);
+            stage.update();
+        }
+    });
+
+    socket.on('readyRes', function(data) {
+        if (data == 1) { //1 = please wait, 0 = all players ready
+            stage.removeChild(btn_ready);
+            txt_status.text = "Please Wait Till Opponent is ready...";
+            stage.update();
+        } else {
+            console.log('Game start now.')
+            stage.removeChild(btn_ready);
+            stage.removeChild(txt_status);
+            stage.addChild(rect_player1);
+            stage.addChild(rect_player2);
+            stage.addChild(rect_ball);
             stage.update();
         }
     });
