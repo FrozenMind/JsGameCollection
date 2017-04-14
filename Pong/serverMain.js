@@ -6,7 +6,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var game = require('./lib/game.js');
+var Game = require('./lib/game.js');
 
 var searchQueue = [];
 var games = [];
@@ -43,6 +43,7 @@ io.on('connection', function(socket) {
     //on socket disconnect
     socket.on('disconnect', function(data) {
         log.debug("User disconnected from HTTP");
+        searchQueue.splice(socket);
     });
     //on socket error
     socket.on('error', function(err) {
@@ -56,15 +57,28 @@ io.on('connection', function(socket) {
         socket.name = data;
         log.debug(socket.name + " started Searching");
         searchQueue.push(socket);
-        if (searchQueue >= 2) { //1 = please wait, 0 = ready
-            socket.emit('searchRes', 0);
+        if (searchQueue.length >= 2) { //1 = please wait, 0 = ready
+            searchQueue[0].emit('searchRes', 0);
+            searchQueue[1].emit('searchRes', 0);
+            games.push(new Game(searchQueue[0], searchQueue[1]));
+            log.debug("Game created with: " + searchQueue[0].name + ", " + searchQueue[1].name);
+            searchQueue.splice(0, 2);
             //TODO: start game with 2 players
         } else {
             socket.emit('searchRes', 1);
         }
     });
-    socket.on('ready', function(data) {
+    socket.on('ready', function(data) { //1=player ready, just important that event is received (for now)
         log.debug(socket.name + " is ready");
+        var go = games[0].isReady(socket.name);
+        log.debug(go);
+        if (go) {
+            log.debug("Both ready. Game start now.")
+            games[0].s1.emit('readyRes', 0);
+            games[0].s2.emit('readyRes', 0);
+        } else {
+            socket.emit('readyRes', 1);
+        }
     });
     socket.on('keyDown', function(data) {
         log.debug(socket.name + " pressed " + data.key); //up = 38, down = 40
