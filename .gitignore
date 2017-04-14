@@ -1,3 +1,4 @@
 Pong/node_modules
+node_modules
 Pong/lib/easeljs-0.8.2.min.js
 Ping/lib/socket.io.js
