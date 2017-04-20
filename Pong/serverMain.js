@@ -71,11 +71,10 @@ io.on('connection', function(socket) {
     socket.on('ready', function(data) { //1=player ready, just important that event is received (for now)
         log.debug(socket.name + " is ready");
         var go = games[0].isReady(socket.name);
-        log.debug(go);
         if (go) {
             log.debug("Both ready. Game start now.")
-            games[0].s1.emit('readyRes', 0);
-            games[0].s2.emit('readyRes', 0);
+            games[0].broadcast('readyRes', 0);
+            games[0].broadcast('drawGame', games[0].getGameObjects());
         } else {
             socket.emit('readyRes', 1);
         }
