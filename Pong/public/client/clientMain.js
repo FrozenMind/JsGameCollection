@@ -4,7 +4,7 @@ var stage;
 var width, height;
 var rect_player1, rect_player2, cir_ball;
 var btn_search, btn_ready;
-var txt_status, txt_score, txt_name1, txt_name2;
+var txt_status, txt_score, name1, name2;
 var playerHeight, playerWidth;
 
 
@@ -63,24 +63,8 @@ function initStage() {
         text: "0 : 0",
         font: "12px Arial",
         color: "#000000",
-        x: 0,
-        y: 0
-    });
-    txt_name1 = new createjs.Text(); //name of player one
-    txt_name1.set({
-        text: "Name1",
-        font: "12px Arial",
-        color: "#000000",
-        x: 0,
-        y: 0
-    });
-    txt_name2 = new createjs.Text(); //name of player two
-    txt_name2.set({
-        text: "Name2",
-        font: "12px Arial",
-        color: "#000000",
-        x: 0,
-        y: 0
+        x: width / 2,
+        y: 10
     });
     stage.addChild(btn_search);
     stage.addChild(txt_status);
@@ -94,8 +78,18 @@ function initSocket() {
         //TODO: initalize game area and draw start objects
     });
 
-    socket.on('gameObjectReceived', function(data) {
+    socket.on('drawGame', function(data) {
         //TODO: draw game out of objects
+        console.log(data);
+        rect_player1.x = data.player1.x;
+        rect_player1.y = data.player1.y;
+        rect_player2.x = data.player2.x;
+        rect_player2.y = data.player2.y;
+        rect_ball.x = data.ball.x;
+        rect_ball.y = data.ball.y;
+        txt_score.text = data.name.player1 + " " + data.score.player1 + " : " + data.score.player2 + " " + data.name.player2;
+        console.log("Game updated");
+        stage.update();
     });
 
     socket.on('counter', function(data) {
@@ -134,6 +128,7 @@ function initSocket() {
             stage.addChild(rect_player1);
             stage.addChild(rect_player2);
             stage.addChild(rect_ball);
+            stage.addChild(txt_score);
             stage.update();
         }
     });
