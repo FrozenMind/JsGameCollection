@@ -4,7 +4,29 @@ var Game = function(socket1, socket2) {
     this.s1 = socket1;
     this.s2 = socket2;
     this.ready = 0;
-    //TODO: init players and ball
+    this.gameObjects = {
+        player1: {
+            x: 50,
+            y: 150
+        },
+        player2: {
+            x: 450,
+            y: 150
+        },
+        ball: {
+            x: 250,
+            y: 200
+        },
+        score: {
+            player1: 0,
+            player2: 0
+        },
+        name: {
+            player1: this.s1.name,
+            player2: this.s2.name
+        }
+    };
+    this.active = false;
 }
 
 Game.prototype.isReady = function(name) {
@@ -12,22 +34,24 @@ Game.prototype.isReady = function(name) {
         this.ready++;
     }
     if (this.ready == 2) {
+        this.active = true;
         return true;
     } else {
         return false;
     }
 }
 
-Game.prototype.getGameObject = function() {
-    //TODO: return game object if interval is active
+Game.prototype.getGameObjects = function() {
+    if (this.active)
+        return this.gameObjects;
 }
 
 Game.prototype.startInterval = function() {
-    //TODO: activate interval
+    this.active = true;
 }
 
 Game.prototype.stopInterval = function() {
-    //TODO: pause interval
+    this.active = false;
 }
 
 Game.prototype.startCounter = function() {
@@ -44,6 +68,11 @@ Game.prototype.update = function() {
 
 Game.prototype.movePlayer = function(socket, upOrDown) {
     //TODO: move player up or down depends on what key he send
+}
+
+Game.prototype.broadcast = function(key, val) {
+    this.s1.emit(key, val);
+    this.s2.emit(key, val);
 }
 
 module.exports = Game;
