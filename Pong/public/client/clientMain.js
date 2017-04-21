@@ -150,10 +150,6 @@ function initSocket() {
 }
 
 function onKeyDown(e) {
-  //TODO: if up or down pressed tell server what key is pressed
-  if (e.keyCode == "38" || e.keyCode == "40") { //up = 38, down = 40
-    var data = undefined;
-    data.key = e.keyCode;
-    socket.emit('keyDown', data);
-  }
+  if (e.keyCode == "38" || e.keyCode == "40") //up = 38, down = 40
+    socket.emit('keyDown', e.keyCode);
 }

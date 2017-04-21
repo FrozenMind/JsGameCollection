@@ -78,15 +78,13 @@ io.on('connection', function(socket) {
       games[0].startCounter();
       //draw game once and start
       games[0].broadcast('drawGame', games[0].getGameObjects());
+      games[0].startInterval();
     } else {
       socket.emit('readyRes', 1);
     }
   });
   socket.on('keyDown', function(data) {
-    log.debug(socket.name + " pressed " + data.key); //up = 38, down = 40
+    log.debug(socket.name + " pressed " + data); //up = 38, down = 40
+    games[0].movePlayer(socket, data);
   });
 });
-
-function onKeyDown() {
-  //TODO: tell game to moveplayer
-}
