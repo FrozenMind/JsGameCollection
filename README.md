@@ -7,7 +7,12 @@ Here we build small games with the easlejs Framework (http://www.createjs.com/ea
 ## In this Repository
 ### Snake
 Jump to Folder: https://github.com/FrozenMind/JsGameCollection/tree/master/Snake
-<br>Play on: www.games-broduction.com
+<br>Play on: www.games-broduction.com (coming soon)
+
+### Pong
+Multiplayer Pong with NodeJs Sever
+Jump to Folder: https://github.com/FrozenMind/JsGameCollection/tree/master/Pong
+<br>Play on: www.games-broduction.com:59001 (coming soon)
 
 ## In other Repositorys
 ### Tetris
