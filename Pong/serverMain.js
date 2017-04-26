@@ -68,11 +68,19 @@ io.on('connection', function(socket) {
       searchQueue[0].emit('searchRes', true);
       searchQueue[1].emit('searchRes', true);
       //create new game with first 2 sockets
-      games.push(new Game(searchQueue[0], searchQueue[1]));
+      var opt = {
+        ballSpeed: 5,
+        width: 400, //TODO: get client size
+        height: 300, //TODO: get client size
+        ballSize: 10,
+        playerWidth: 20,
+        playerHeight: 100,
+        playerSpeed: 3
+      };
+      games.push(new Game(searchQueue[0], searchQueue[1], opt));
       log.debug("Game created with: " + searchQueue[0].name + ", " + searchQueue[1].name);
       //splice first 2 sockets from searchQueue
       searchQueue.splice(0, 2);
-      //TODO: start game
     } else {
       //tell socket to wait
       socket.emit('searchRes', false);
@@ -93,6 +101,11 @@ io.on('connection', function(socket) {
       games[0].broadcast('drawGame', games[0].getGameObjects());
       //start game, game object will do the rest
       games[0].startInterval();
+      //start an interval that send 30 times a sec the gameobjects
+      var g = setInterval(function() {
+        games[0].update();
+        games[0].broadcast('drawGame', games[0].getGameObjects());
+      }, 1000 / 30);
     } else {
       //tell player that his opponent isn't ready yet
       socket.emit('readyRes', false);
