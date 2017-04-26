@@ -1,20 +1,20 @@
 //Game File to create gameobject
-var Game = function(socket1, socket2) {
+var Game = function(socket1, socket2, opt) {
   this.s1 = socket1; //player1
   this.s2 = socket2; //player2
   this.ready = 0; //counter to check who is ready
   this.gameObjects = {
     player1: {
       x: 50,
-      y: 150
+      y: 100
     },
     player2: {
-      x: 450,
-      y: 150
+      x: 350,
+      y: 100
     },
     ball: {
-      x: 250,
-      y: 200
+      x: 200,
+      y: 150
     },
     score: {
       player1: 0,
@@ -25,6 +25,16 @@ var Game = function(socket1, socket2) {
       player2: this.s2.name
     }
   }; //gameObjects contains both player, ball, score and name
+  //opt has lot of values
+  this.ballSpeed = opt.ballSpeed; //speed ball is moving (xSpeed +ySpeed = ballSpeed)
+  this.xSpeed = this.ballSpeed - 1;
+  this.ySpeed = 1;
+  this.width = opt.width; //stage width
+  this.height = opt.height; //stage.height
+  this.ballSize = opt.ballSize;
+  this.playerWidth = opt.playerWidth;
+  this.playerHeight = opt.playerHeight;
+  this.playerSpeed = opt.playerSpeed;
   //client will draw this one if it receives this
   this.active = false; //is game running?
 }
@@ -88,12 +98,71 @@ Game.prototype.isGoal = function() {
 }
 
 Game.prototype.update = function() {
-  //TODO: update players and ball and return gameObjects in interval while game is active
-  //here a server tick is necessary
+  //TODO: ball movement does everything wrong --> FIX IT
+  if (this.active) {
+    //check goal
+    if (this.gameObjects.ball.x < 0 || this.gameObjects.ball.x + this.ballSize > this.width) {
+      //TODO: call isGoal method
+      //for now reset ball to mid
+      this.gameObjects.ball.x = 200; //TODO: DEL later
+      this.gameObjects.ball.y = 150; //TODO: DEL later
+      this.xSpeed = 4; //TODO: DEL later
+      this.ySpeed = 1; //TODO: DEL later
+    } else if (this.gameObjects.ball.y <= 0 || this.gameObjects.ball.y + this.ballSize >= this.height) {
+      //ball hit top or bottom
+      this.ySpeed *= -1;
+    }
+    //check if ball hits player
+    if (this.gameObjects.ball.x - this.ballSize <= this.gameObjects.player1.x - this.playerWidth) {
+      if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player1.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player1.y + this.playerHeight) {
+        var ss = (this.gameObjects.ball.y - this.gameObjects.player1.y + this.playerHeight / 2) / (this.playerHeight / 2);
+        this.ySpeed = this.ballSpeed * Math.abs(ss);
+        if (ss < 0) {
+          this.ySpeed *= -1;
+        }
+        this.xSpeed = this.ballSpeed - this.ySpeed;
+      }
+    } else if (this.gameObjects.ball.x + this.ballSize >= this.gameObjects.player2.x) {
+      if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player2.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player2.y + this.playerHeight) {
+        var ss = (this.gameObjects.ball.y - this.gameObjects.player1.y + this.playerHeight / 2) / (this.playerHeight / 2);
+        this.ySpeed = this.ballSpeed * Math.abs(ss);
+        if (ss < 0) {
+          this.ySpeed *= -1;
+        }
+        this.xSpeed = this.ballSpeed - this.ySpeed;
+      }
+    }
+    //move ball
+    this.gameObjects.ball.x += this.xSpeed;
+    this.gameObjects.ball.y += this.ySpeed;
+  }
 }
 
 Game.prototype.movePlayer = function(name, upOrDown) {
-  //TODO: move player up or down depends on what key he send
+  //move player up = 38 or down = 40
+  if (this.s1.name == name) {
+    switch (upOrDown) {
+      case 38: //up
+        if (this.gameObjects.player1.y > 0)
+          this.gameObjects.player1.y -= this.playerSpeed;
+        break;
+      case 40: //down
+        if (this.gameObjects.player1.y + this.playerHeight < this.height)
+          this.gameObjects.player1.y += this.playerSpeed;
+        break;
+    }
+  } else if (this.s2.name == name) {
+    switch (upOrDown) {
+      case 38: //up
+        if (this.gameObjects.player2.y > 0)
+          this.gameObjects.player2.y -= this.playerSpeed;
+        break;
+      case 40: //down
+        if (this.gameObjects.player2.y + this.playerHeight < this.height)
+          this.gameObjects.player2.y += this.playerSpeed;
+        break;
+    }
+  }
 }
 
 Game.prototype.broadcast = function(key, val) {
