@@ -15,6 +15,8 @@ $(document).ready(function() {
   initSocket(); //connect to server and create socket events
 });
 
+//TODO: init the player and ball on event based on serverside
+//TODO2: so its not fix, so u can make different game modes
 function initStage() {
   stage = new createjs.Stage('gameArea'); //create stage
   stage.canvas.style.background = "#ffffff"; //set stage bg
@@ -43,6 +45,7 @@ function initStage() {
   btn_search.addEventListener('click', function(event) {
     if ($("#nameInput").val() != "") {
       socket.emit('search', $("#nameInput").val());
+      $("#nameInput").remove();
     }
   });
   btn_ready = new createjs.Shape();
@@ -83,6 +86,8 @@ function initStage() {
   stage.addChild(btn_search);
   stage.addChild(txt_status);
   stage.update(); //update stage once
+  //add key event listener
+  document.addEventListener("keydown", keyDown, false);
 }
 
 function initSocket() {
@@ -159,7 +164,7 @@ function initSocket() {
 }
 
 //on key down tell server whether u pressed up or down
-function onKeyDown(e) {
-  if (e.keyCode == "38" || e.keyCode == "40") //up = 38, down = 40
+function keyDown(e) {
+  if (e.keyCode == 38 || e.keyCode == 40) //up = 38, down = 40
     socket.emit('keyDown', e.keyCode);
 }
