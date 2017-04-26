@@ -88,7 +88,7 @@ io.on('connection', function(socket) {
       //tell players game will start
       games[0].broadcast('readyRes', true);
       //start counter for game (3, 2, 1, GO)
-      games[0].startCounter();
+      games[0].drawCounter();
       //draw game once
       games[0].broadcast('drawGame', games[0].getGameObjects());
       //start game, game object will do the rest

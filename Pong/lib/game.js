@@ -61,7 +61,7 @@ Game.prototype.stopInterval = function() {
   this.active = false;
 }
 
-Game.prototype.startCounter = function() {
+Game.prototype.drawCounter = function() {
   var count = 3;
   //copy sockets because this context isn't available in interval
   //TODO: save context so clone can be deleted
