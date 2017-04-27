@@ -102,7 +102,13 @@ Game.prototype.update = function() {
   if (this.active) {
     //check goal
     if (this.gameObjects.ball.x < 0 || this.gameObjects.ball.x + this.ballSize > this.width) {
-      //TODO: call isGoal method
+      //give score to player
+      if (this.gameObjects.ball.x < 0) {
+        this.gameObjects.score.player1++;
+      } else {
+        this.gameObjects.score.player2++;
+      }
+      //TODO: wait a sec, maybe start a new counter
       //for now reset ball to mid
       this.gameObjects.ball.x = 200; //TODO: DEL later
       this.gameObjects.ball.y = 150; //TODO: DEL later
@@ -111,25 +117,38 @@ Game.prototype.update = function() {
     } else if (this.gameObjects.ball.y <= 0 || this.gameObjects.ball.y + this.ballSize >= this.height) {
       //ball hit top or bottom
       this.ySpeed *= -1;
+      if (this.gameObjects.ball.y <= 0) {
+        this.gameObjects.ball.y = this.ballSize;
+      } else {
+        this.gameObjects.ball.y = this.height - this.ballSize;
+      }
     }
     //check if ball hits player
-    if (this.gameObjects.ball.x - this.ballSize <= this.gameObjects.player1.x - this.playerWidth) {
+    if (this.gameObjects.ball.x - this.ballSize <= this.gameObjects.player1.x + this.playerWidth) {
       if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player1.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player1.y + this.playerHeight) {
-        var ss = (this.gameObjects.ball.y - this.gameObjects.player1.y + this.playerHeight / 2) / (this.playerHeight / 2);
-        this.ySpeed = this.ballSpeed * Math.abs(ss);
-        if (ss < 0) {
-          this.ySpeed *= -1;
+        var ss = (this.gameObjects.ball.y - this.gameObjects.player1.y) / (this.playerHeight / 2);
+        if (ss > 1) {
+          this.ySpeed = (this.ballSpeed - 1) * (2 - ss);
+        } else if (ss < 1) {
+          this.ySpeed = (this.ballSpeed - 1) * (1 - ss);
+          this.ySpeed *= (-1);
+        } else {
+          this.ySpeed = 0;
         }
-        this.xSpeed = this.ballSpeed - this.ySpeed;
+        this.xSpeed = this.ballSpeed - Math.abs(this.ySpeed);
       }
     } else if (this.gameObjects.ball.x + this.ballSize >= this.gameObjects.player2.x) {
       if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player2.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player2.y + this.playerHeight) {
-        var ss = (this.gameObjects.ball.y - this.gameObjects.player1.y + this.playerHeight / 2) / (this.playerHeight / 2);
-        this.ySpeed = this.ballSpeed * Math.abs(ss);
-        if (ss < 0) {
-          this.ySpeed *= -1;
+        var ss = (this.gameObjects.ball.y - this.gameObjects.player2.y) / (this.playerHeight / 2);
+        if (ss > 1) {
+          this.ySpeed = (this.ballSpeed - 1) * (2 - ss);
+        } else if (ss < 1) {
+          this.ySpeed = (this.ballSpeed - 1) * (1 - ss);
+          this.ySpeed *= (-1);
+        } else {
+          this.ySpeed = 0; //ball in mid of player
         }
-        this.xSpeed = this.ballSpeed - this.ySpeed;
+        this.xSpeed = (this.ballSpeed - Math.abs(this.ySpeed)) * (-1); //*-1 because ball need to move to left side
       }
     }
     //move ball
