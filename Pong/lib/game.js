@@ -80,21 +80,14 @@ Game.prototype.stopInterval = function() {
 
 Game.prototype.drawCounter = function() {
   var count = 3;
-  //copy sockets because this context isn't available in interval
-  //TODO: save context so clone can be deleted
-  var s1Copy = this.s1;
-  var s2Copy = this.s2;
+  var that = this; //save context
   //inteval send every second the number 3 - 0
   var counterInterval = setInterval(function() {
-    //TODO: user broadcast method on right context
-    s1Copy.emit('counter', count);
-    s2Copy.emit('counter', count);
+    that.broadcast('counter', count);
     count--;
     //if 0 is send clearInterval
     if (count == -1) {
-      //TODO: user broadcast method on right context
-      s1Copy.emit('counter', -1); //-1 says delete label
-      s2Copy.emit('counter', -1);
+      that.broadcast('counter', -1); //-1 says delete label
       clearInterval(counterInterval);
     }
   }, 1000);
