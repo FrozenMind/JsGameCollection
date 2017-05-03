@@ -90,22 +90,7 @@ io.on('connection', function(socket) {
   socket.on('ready', function(data) { //true=player ready
     log.debug(socket.name + " is ready");
     //check if both players are ready, by telling him that one player is ready
-    var go = games[findGameID(socket.name)].isReady(socket.name);
-    //if both player are ready
-    if (go) {
-      log.debug("Both ready. Game start now.")
-      //tell players game will start
-      games[findGameID(socket.name)].broadcast('readyRes', true);
-      //start counter for game (3, 2, 1, GO)
-      games[findGameID(socket.name)].drawCounter();
-      //draw game once
-      games[findGameID(socket.name)].broadcast('drawGame', games[findGameID(socket.name)].getGameObjects());
-      //start game, game object will do the rest
-      games[findGameID(socket.name)].startInterval();
-    } else {
-      //tell player that his opponent isn't ready yet
-      socket.emit('readyRes', false);
-    }
+    games[findGameID(socket.name)].isReady(socket.name);
   });
   socket.on('keyDown', function(data) {
     log.debug(socket.name + " pressed " + data); //up = 38, down = 40

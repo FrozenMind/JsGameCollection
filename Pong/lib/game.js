@@ -41,18 +41,25 @@ var Game = function(socket1, socket2, opt) {
 }
 
 Game.prototype.isReady = function(name) {
-  //check if socket is one of the 2 player
-  if (this.s1.name == name || this.s2.name == name) {
-    //increase ready
-    this.ready++;
-  }
+  var that = this;
+  this.ready++; //increase ready counter
+  //if both player are ready
   if (this.ready == 2) {
-    //both player are ready, so start game, server will call broadcast method
-    //TODO: understand which context is necessary here and call broadcast method
-    this.active = true;
-    return true;
+    console.log("Both ready. Game start now.")
+    //tell players game will start
+    that.broadcast('readyRes', true);
+    //start counter for game (3, 2, 1, GO)
+    that.drawCounter();
+    //draw game once
+    that.broadcast('drawGame', that.getGameObjects());
+    //start game, game object will do the rest
+    that.startInterval();
   } else {
-    return false;
+    //tell player that his opponent isn't ready yet
+    if (this.s1.name == name)
+      this.s1.emit('readyRes', false);
+    else if (this.s2.name == name)
+      this.s2.emit('readyRes', false);
   }
 }
 
