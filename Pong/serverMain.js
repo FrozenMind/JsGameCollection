@@ -59,6 +59,7 @@ io.on('connection', function(socket) {
   socket.on('search', function(data) {
     //save user name to socket
     socket.name = data;
+    //TODO: check that name is unique
     log.debug(socket.name + " started Searching");
     //add socket to searchQueue
     searchQueue.push(socket);
@@ -89,23 +90,18 @@ io.on('connection', function(socket) {
   socket.on('ready', function(data) { //true=player ready
     log.debug(socket.name + " is ready");
     //check if both players are ready, by telling him that one player is ready
-    var go = games[0].isReady(socket.name);
+    var go = games[findGameID(socket.name)].isReady(socket.name);
     //if both player are ready
     if (go) {
       log.debug("Both ready. Game start now.")
       //tell players game will start
-      games[0].broadcast('readyRes', true);
+      games[findGameID(socket.name)].broadcast('readyRes', true);
       //start counter for game (3, 2, 1, GO)
-      games[0].drawCounter();
+      games[findGameID(socket.name)].drawCounter();
       //draw game once
-      games[0].broadcast('drawGame', games[0].getGameObjects());
+      games[findGameID(socket.name)].broadcast('drawGame', games[findGameID(socket.name)].getGameObjects());
       //start game, game object will do the rest
-      games[0].startInterval();
-      //start an interval that send 30 times a sec the gameobjects
-      var g = setInterval(function() {
-        games[0].update();
-        games[0].broadcast('drawGame', games[0].getGameObjects());
-      }, 1000 / 30);
+      games[findGameID(socket.name)].startInterval();
     } else {
       //tell player that his opponent isn't ready yet
       socket.emit('readyRes', false);
@@ -114,6 +110,15 @@ io.on('connection', function(socket) {
   socket.on('keyDown', function(data) {
     log.debug(socket.name + " pressed " + data); //up = 38, down = 40
     //tell game that one player moved
-    games[0].movePlayer(socket.name, data);
+    games[findGameID(socket.name)].movePlayer(socket.name, data);
   });
 });
+
+//find game ID which has one socket with this name
+function findGameID(sName) {
+  for (i = games.length - 1; i >= 0; i--) {
+    if (games[i].s1.name == sName || games[i].s2.name == sName)
+      return i;
+  }
+  return -1; //socket is in no active game
+}

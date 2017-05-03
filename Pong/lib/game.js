@@ -37,6 +37,7 @@ var Game = function(socket1, socket2, opt) {
   this.playerSpeed = opt.playerSpeed;
   //client will draw this one if it receives this
   this.active = false; //is game running?
+  this.run = undefined; //game interval
 }
 
 Game.prototype.isReady = function(name) {
@@ -64,6 +65,12 @@ Game.prototype.getGameObjects = function() {
 Game.prototype.startInterval = function() {
   //start game
   this.active = true;
+  //start an interval that send 30 times a sec the gameobjects
+  var that = this; //save context to use in interval
+  this.run = setInterval(function() {
+    that.update();
+    that.broadcast('drawGame', that.getGameObjects());
+  }, 1000 / 30);
 }
 
 Game.prototype.stopInterval = function() {
