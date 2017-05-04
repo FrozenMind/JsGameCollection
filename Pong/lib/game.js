@@ -168,16 +168,16 @@ Game.prototype.update = function() {
     //move player
     if (this.gameObjects.player1.move) {
       if (this.gameObjects.player1.dir) {
-        this.gameObjects.player1.x -= this.playerSpeed; //up = true, down = false
+        this.gameObjects.player1.y -= this.playerSpeed; //up = true, down = false
       } else {
-        this.gameObjects.player1.x += this.playerSpeed; //up = true, down = false
+        this.gameObjects.player1.y += this.playerSpeed; //up = true, down = false
       }
     }
     if (this.gameObjects.player2.move) {
       if (this.gameObjects.player2.dir) {
-        this.gameObjects.player2.x -= this.playerSpeed; //up = true, down = false
+        this.gameObjects.player2.y -= this.playerSpeed; //up = true, down = false
       } else {
-        this.gameObjects.player2.x += this.playerSpeed; //up = true, down = false
+        this.gameObjects.player2.y += this.playerSpeed; //up = true, down = false
       }
     }
   }
