@@ -197,7 +197,7 @@ Game.prototype.movePlayer = function(name, upOrDown, PressedOrReleased) {
       this.gameObjects.player2.move = true;
       this.gameObjects.player2.dir = upOrDown;
     } else {
-      this.gameObjects.player1.move = false;
+      this.gameObjects.player2.move = false;
     }
   }
 }
