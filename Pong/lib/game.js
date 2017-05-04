@@ -165,19 +165,20 @@ Game.prototype.update = function() {
     //move ball
     this.gameObjects.ball.x += this.xSpeed;
     this.gameObjects.ball.y += this.ySpeed;
-    //move player
+    //move player1
     if (this.gameObjects.player1.move) {
       if (this.gameObjects.player1.dir) {
-        this.gameObjects.player1.y -= this.playerSpeed; //up = true, down = false
+        this.gameObjects.player1.y -= this.gameObjects.player1.y <= 0 ? 0 : this.playerSpeed; //up = true, down = false
       } else {
-        this.gameObjects.player1.y += this.playerSpeed; //up = true, down = false
+        this.gameObjects.player1.y += this.gameObjects.player1.y + this.playerHeight >= this.height ? 0 : this.playerSpeed; //up = true, down = false
       }
     }
+    //move player2
     if (this.gameObjects.player2.move) {
       if (this.gameObjects.player2.dir) {
-        this.gameObjects.player2.y -= this.playerSpeed; //up = true, down = false
+        this.gameObjects.player2.y -= this.gameObjects.player2.y <= 0 ? 0 : this.playerSpeed; //up = true, down = false
       } else {
-        this.gameObjects.player2.y += this.playerSpeed; //up = true, down = false
+        this.gameObjects.player2.y += this.gameObjects.player2.y + this.playerHeight >= this.height ? 0 : this.playerSpeed; //up = true, down = false
       }
     }
   }
