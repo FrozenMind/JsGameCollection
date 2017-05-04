@@ -95,7 +95,12 @@ io.on('connection', function(socket) {
   socket.on('keyDown', function(data) {
     log.debug(socket.name + " pressed " + data); //up = 38, down = 40
     //tell game that one player moved
-    games[findGameID(socket.name)].movePlayer(socket.name, data);
+    games[findGameID(socket.name)].movePlayer(socket.name, data == 38 ? true : false, true);
+  });
+  socket.on('keyUp', function(data) {
+    log.debug(socket.name + " released " + data); //up = 38, down = 40
+    //tell game that one player stopped move
+    games[findGameID(socket.name)].movePlayer(socket.name, data == 38 ? true : false, false);
   });
 });
 

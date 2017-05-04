@@ -88,6 +88,7 @@ function initStage() {
   stage.update(); //update stage once
   //add key event listener
   document.addEventListener("keydown", keyDown, false);
+  document.addEventListener("keyup", keyUp, false);
 }
 
 function initSocket() {
@@ -167,4 +168,9 @@ function initSocket() {
 function keyDown(e) {
   if (e.keyCode == 38 || e.keyCode == 40) //up = 38, down = 40
     socket.emit('keyDown', e.keyCode);
+}
+//on key up tell server stop move his player
+function keyUp(e) {
+  if (e.keyCode == 38 || e.keyCode == 40) //up = 38, down = 40
+    socket.emit('keyUp', e.keyCode);
 }

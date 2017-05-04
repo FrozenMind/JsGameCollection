@@ -6,11 +6,15 @@ var Game = function(socket1, socket2, opt) {
   this.gameObjects = {
     player1: {
       x: 50,
-      y: 100
+      y: 100,
+      move: false,
+      dir: false //false = down, true = up
     },
     player2: {
       x: 350,
-      y: 100
+      y: 100,
+      move: false,
+      dir: false //false = down, true = up
     },
     ball: {
       x: 200,
@@ -161,32 +165,39 @@ Game.prototype.update = function() {
     //move ball
     this.gameObjects.ball.x += this.xSpeed;
     this.gameObjects.ball.y += this.ySpeed;
+    //move player
+    if (this.gameObjects.player1.move) {
+      if (this.gameObjects.player1.dir) {
+        this.gameObjects.player1.x -= this.playerSpeed; //up = true, down = false
+      } else {
+        this.gameObjects.player1.x += this.playerSpeed; //up = true, down = false
+      }
+    }
+    if (this.gameObjects.player2.move) {
+      if (this.gameObjects.player2.dir) {
+        this.gameObjects.player2.x -= this.playerSpeed; //up = true, down = false
+      } else {
+        this.gameObjects.player2.x += this.playerSpeed; //up = true, down = false
+      }
+    }
   }
 }
 
-Game.prototype.movePlayer = function(name, upOrDown) {
+Game.prototype.movePlayer = function(name, upOrDown, PressedOrReleased) {
   //move player up = 38 or down = 40
   if (this.s1.name == name) {
-    switch (upOrDown) {
-      case 38: //up
-        if (this.gameObjects.player1.y > 0)
-          this.gameObjects.player1.y -= this.playerSpeed;
-        break;
-      case 40: //down
-        if (this.gameObjects.player1.y + this.playerHeight < this.height)
-          this.gameObjects.player1.y += this.playerSpeed;
-        break;
+    if (PressedOrReleased) {
+      this.gameObjects.player1.move = true;
+      this.gameObjects.player1.dir = upOrDown;
+    } else {
+      this.gameObjects.player1.move = false;
     }
   } else if (this.s2.name == name) {
-    switch (upOrDown) {
-      case 38: //up
-        if (this.gameObjects.player2.y > 0)
-          this.gameObjects.player2.y -= this.playerSpeed;
-        break;
-      case 40: //down
-        if (this.gameObjects.player2.y + this.playerHeight < this.height)
-          this.gameObjects.player2.y += this.playerSpeed;
-        break;
+    if (PressedOrReleased) {
+      this.gameObjects.player2.move = true;
+      this.gameObjects.player2.dir = upOrDown;
+    } else {
+      this.gameObjects.player1.move = false;
     }
   }
 }
