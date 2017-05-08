@@ -45,7 +45,10 @@ function initStage() {
   btn_search.addEventListener('click', function(event) {
     if ($("#nameInput").val() != "") {
       socket.emit('search', $("#nameInput").val());
+      $("#nameView").text("Name: " + $("#nameInput").val());
       $("#nameInput").remove();
+    } else {
+      alert("Please choose a name first");
     }
   });
   btn_ready = new createjs.Shape();
