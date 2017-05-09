@@ -76,7 +76,7 @@ io.on('connection', function(socket) {
         ballSize: 10,
         playerWidth: 20,
         playerHeight: 100,
-        playerSpeed: 5
+        playerSpeed: 3
       };
       games.push(new Game(searchQueue[0], searchQueue[1], opt));
       log.debug("Game created with: " + searchQueue[0].name + ", " + searchQueue[1].name);
