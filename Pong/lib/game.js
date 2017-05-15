@@ -56,8 +56,6 @@ Game.prototype.isReady = function(name) {
     that.drawCounter();
     //draw game once
     that.broadcast('drawGame', that.getGameObjects());
-    //start game, game object will do the rest
-    that.startInterval();
   } else {
     //tell player that his opponent isn't ready yet
     if (this.s1.name == name)
@@ -79,8 +77,10 @@ Game.prototype.startInterval = function() {
   //start an interval that send 30 times a sec the gameobjects
   var that = this; //save context to use in interval
   this.run = setInterval(function() {
-    that.update();
-    that.broadcast('drawGame', that.getGameObjects());
+    if (that.active) {
+      that.update();
+      that.broadcast('drawGame', that.getGameObjects());
+    }
   }, 1000 / 60);
 }
 
@@ -97,8 +97,10 @@ Game.prototype.drawCounter = function() {
     that.broadcast('counter', count);
     count--;
     //if 0 is send clearInterval
-    if (count == -1) {
+    if (count <= -1) {
       that.broadcast('counter', -1); //-1 says delete label
+      //start game, game object will do the rest
+      that.startInterval();
       clearInterval(counterInterval);
     }
   }, 1000);
