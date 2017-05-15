@@ -5,11 +5,20 @@
   <script src="lib/socket.io.js"></script>
   <script src="lib/easeljs-0.8.2.min.js"></script>
   <script src="client/clientMain.js"></script>
+  <style type="text/css">
+       #inputDiv{
+         position: relative;
+       }
+   </style>
 </head>
 
 <body>
   <h2>Pong Made By <a href="www.gamesbroduction.com"> GamesBroduction</a></h2>
-  <a id="nameView">Name: </a><input id="nameInput" type="text"></input>  
+  <div id="inputDiv">
+    <a id="nameView">Name: </a><br>
+    <input id="nameInput" type="text"></input><br>
+    <button id="startButton">START</button>
+  </div>
   </br>
   <canvas id="gameArea" width="400" height="300"></canvas>
 </body>

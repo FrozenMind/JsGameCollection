@@ -8,6 +8,7 @@ var txt_status; //show different texts like are u ready, please wait, ..
 var txt_score; //shows score label
 var txt_counter; //show counter
 var playerHeight, playerWidth; //width and height is clientside for now
+var myName;
 //TODO: move width and height to server side.
 
 $(document).ready(function() {
@@ -43,13 +44,7 @@ function initStage() {
   btn_search.y = 0;
   btn_search.graphics.beginFill("#ff0000").drawRect(0, 0, 200, 50);
   btn_search.addEventListener('click', function(event) {
-    if ($("#nameInput").val() != "") {
-      socket.emit('search', $("#nameInput").val());
-      $("#nameView").text("Name: " + $("#nameInput").val());
-      $("#nameInput").remove();
-    } else {
-      alert("Please choose a name first");
-    }
+    socket.emit('search', myName);
   });
   btn_ready = new createjs.Shape();
   btn_ready.x = 0;
@@ -86,12 +81,28 @@ function initStage() {
     y: 50
   });
   //default is search button active
-  stage.addChild(btn_search);
-  stage.addChild(txt_status);
   stage.update(); //update stage once
   //add key event listener
   document.addEventListener("keydown", keyDown, false);
   document.addEventListener("keyup", keyUp, false);
+  //start button
+  $("#startButton").click(function() {
+    //tell server that somebody connected
+    if ($("#nameInput").val() != "") {
+      myName = $("#nameInput").val();
+      socket.emit('join', $("#nameInput").val());
+      $("#nameView").text("Name: " + $("#nameInput").val());
+      $("#nameInput").remove();
+      $("#startButton").remove();
+      showSearchButton();
+    }
+  });
+}
+
+function showSearchButton() {
+  stage.addChild(btn_search);
+  stage.addChild(txt_status);
+  stage.update();
 }
 
 function initSocket() {

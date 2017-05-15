@@ -56,9 +56,11 @@ io.on('connection', function(socket) {
   //##################
   //#pong game events#
   //##################
-  socket.on('search', function(data) {
+  socket.on('join', function(data) {
     //save user name to socket
     socket.name = data;
+  });
+  socket.on('search', function(data) {
     //TODO: check that name is unique
     log.debug(socket.name + " started Searching");
     //add socket to searchQueue
