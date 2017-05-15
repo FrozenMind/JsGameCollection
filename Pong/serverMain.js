@@ -125,6 +125,9 @@ function findGameID(sName) {
 //remove one gameObject
 function removeGame(name) {
   var id = findGameID(name);
-  if (id != -1)
+  if (id != -1) {
     games.splice(id, 1);
+    log.info("Game " + id + " closed")
+  }
+
 }

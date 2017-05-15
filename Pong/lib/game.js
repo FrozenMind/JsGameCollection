@@ -79,17 +79,17 @@ Game.prototype.startInterval = function() {
     if (that.active) {
       that.update();
       that.broadcast('drawGame', that.getGameObjects());
-    }
-    //check win
-    if (that.gameObjects.score.player1 >= 5 || that.gameObjects.score.player2 >= 5) {
-      that.stopInterval();
-      //tell player whether he won or lost
-      if (that.gameObjects.score.player1 >= 5) {
-        that.s1.emit('done', true);
-        that.s2.emit('done', false);
-      } else {
-        that.s1.emit('done', false);
-        that.s2.emit('done', true);
+      //check win
+      if (that.gameObjects.score.player1 >= 5 || that.gameObjects.score.player2 >= 5) {
+        that.stopInterval();
+        //tell player whether he won or lost
+        if (that.gameObjects.score.player1 >= 5) {
+          that.s1.emit('done', true);
+          that.s2.emit('done', false);
+        } else {
+          that.s1.emit('done', false);
+          that.s2.emit('done', true);
+        }
       }
     }
   }, 1000 / 60);
