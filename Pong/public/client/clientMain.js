@@ -179,7 +179,13 @@ function init() {
       stage.addChild(txt_score);
       stage.update();
     }
-  });
+  })
+  socket.on('done', function(data) {
+    socket.emit('doneRes', true);
+    stage.removeAllChildren();
+    stage.update();
+    showSearchButton();
+  })
 }
 
 //on key down tell server whether u pressed up or down

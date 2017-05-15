@@ -97,6 +97,10 @@ io.on('connection', function(socket) {
     //check if both players are ready, by telling him that one player is ready
     games[findGameID(socket.name)].isReady(socket.name);
   });
+  socket.on('doneRes', function(data) {
+    //tell server to remove this game object
+    removeGame(socket.name);
+  })
   socket.on('keyDown', function(data) {
     log.debug(socket.name + " pressed " + data); //up = 38, down = 40
     //tell game that one player moved
@@ -116,4 +120,11 @@ function findGameID(sName) {
       return i;
   }
   return -1; //socket is in no active game
+}
+
+//remove one gameObject
+function removeGame(name) {
+  var id = findGameID(name);
+  if (id != -1)
+    games.splice(id, 1);
 }
