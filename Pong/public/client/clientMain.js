@@ -12,19 +12,18 @@ var myName;
 //TODO: move width and height to server side.
 
 $(document).ready(function() {
-  initStage(); //init stage objects
-  initSocket(); //connect to server and create socket events
+  init(); //connect to server and create socket events
 });
 
 //TODO: init the player and ball on event based on serverside
 //TODO2: so its not fix, so u can make different game modes
-function initStage() {
+function initStage(opt) {
   stage = new createjs.Stage('gameArea'); //create stage
   stage.canvas.style.background = "#ffffff"; //set stage bg
   width = stage.canvas.width;
   height = stage.canvas.height;
-  playerWidth = 20; //TODO: move to serverside
-  playerHeight = 100; //TODO: move to serverside
+  playerWidth = opt.playerWidth; //TODO: move to serverside
+  playerHeight = opt.playerHeight; //TODO: move to serverside
   //create objects to draw game
   rect_player1 = new createjs.Shape();
   rect_player1.x = playerWidth * 2;
@@ -37,7 +36,7 @@ function initStage() {
   rect_ball = new createjs.Shape();
   rect_ball.x = width / 2;
   rect_ball.y = height / 2;
-  rect_ball.graphics.beginFill("#000000").drawCircle(0, 0, 10);
+  rect_ball.graphics.beginFill("#000000").drawCircle(0, 0, opt.ballSize);
   //buttons have onClick events
   btn_search = new createjs.Shape();
   btn_search.x = 0;
@@ -82,6 +81,17 @@ function initStage() {
   });
   //default is search button active
   stage.update(); //update stage once
+}
+
+function showSearchButton() {
+  stage.addChild(btn_search);
+  txt_status.text = "Start Search For Opponent";
+  stage.addChild(txt_status);
+  stage.update();
+}
+
+function init() {
+  socket = io(); //connect to server
   //add key event listener
   document.addEventListener("keydown", keyDown, false);
   document.addEventListener("keyup", keyUp, false);
@@ -94,20 +104,14 @@ function initStage() {
       $("#nameView").text("Name: " + $("#nameInput").val());
       $("#nameInput").remove();
       $("#startButton").remove();
-      showSearchButton();
     }
   });
-}
-
-function showSearchButton() {
-  stage.addChild(btn_search);
-  stage.addChild(txt_status);
-  stage.update();
-}
-
-function initSocket() {
-  socket = io(); //connect to server
-  //draw objects (players, ball and score)
+  //joinRes returns gameObject data
+  socket.on('joinRes', function(data) {
+    initStage(data); //init stage objects
+    showSearchButton();
+  });
+  //draw objects (players, ball and score
   socket.on('drawGame', function(data) {
     //server will send these in interval based on server tick
     rect_player1.x = data.player1.x;
@@ -139,7 +143,7 @@ function initSocket() {
   //server tells if theres an opponent for u or u need to wait
   socket.on('searchRes', function(data) {
     //false = please wait, true = opponent found
-    if (data == false) {
+    if (!data) {
       //remove button and show please wait text
       stage.removeChild(btn_search);
       txt_status.text = "Please Wait For Opponent...";

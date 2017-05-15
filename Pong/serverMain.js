@@ -10,6 +10,17 @@ var Game = require('./lib/game.js');
 var searchQueue = []; //all sockets that search a game
 var games = []; //has all active games
 
+//game options about sizes and speeds
+var gameOptions = {
+  ballSpeed: 5,
+  width: 400, //TODO: get client size
+  height: 300, //TODO: get client size
+  ballSize: 10,
+  playerWidth: 10,
+  playerHeight: 100,
+  playerSpeed: 3
+};
+
 //create logger --> info and error is logged into a file
 var log = bunyan.createLogger({
   name: 'ESPServerLogger',
@@ -59,6 +70,7 @@ io.on('connection', function(socket) {
   socket.on('join', function(data) {
     //save user name to socket
     socket.name = data;
+    socket.emit('joinRes', gameOptions);
   });
   socket.on('search', function(data) {
     //TODO: check that name is unique
@@ -67,20 +79,11 @@ io.on('connection', function(socket) {
     searchQueue.push(socket);
     //if more than 2 are searching connect them as Opponents
     if (searchQueue.length >= 2) { //false = please wait, true = ready
+      //create new game with first 2 sockets
       //tell first 2 sockets of queue that they found a game
       searchQueue[0].emit('searchRes', true);
       searchQueue[1].emit('searchRes', true);
-      //create new game with first 2 sockets
-      var opt = {
-        ballSpeed: 5,
-        width: 400, //TODO: get client size
-        height: 300, //TODO: get client size
-        ballSize: 10,
-        playerWidth: 20,
-        playerHeight: 100,
-        playerSpeed: 3
-      };
-      games.push(new Game(searchQueue[0], searchQueue[1], opt));
+      games.push(new Game(searchQueue[0], searchQueue[1], gameOptions));
       log.debug("Game created with: " + searchQueue[0].name + ", " + searchQueue[1].name);
       //splice first 2 sockets from searchQueue
       searchQueue.splice(0, 2);
