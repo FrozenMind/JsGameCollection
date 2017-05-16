@@ -1,11 +1,11 @@
 //Nodejs server main file for Pong
-var bunyan = require('bunyan'),
-  net = require('net'),
+var net = require('net'),
   express = require('express'),
   app = express(),
   http = require('http').Server(app),
   io = require('socket.io')(http),
-  Game = require('./lib/game.js')
+  Game = require('./lib/game.js'),
+  log = require('./lib/logger.js') //import logger made bunyan
 
 var searchQueue = [] //all sockets that search a game
 var games = [] //has all active games
@@ -20,21 +20,6 @@ var gameOptions = {
   playerHeight: 100,
   playerSpeed: 3
 }
-
-//create logger --> info and error is logged into a file
-var log = bunyan.createLogger({
-  name: 'Logger',
-  streams: [{
-    level: 'debug',
-    stream: process.stdout
-  }, {
-    level: 'info',
-    path: __dirname + '/log/info.log'
-  }, {
-    level: 'error',
-    path: __dirname + '/log/error.log'
-  }]
-})
 
 //start HTTP Server
 http.listen(59001, function() {
