@@ -40,6 +40,7 @@ function init() {
 }
 
 function start() {
+    score = 0
     stage.removeAllChildren();
     //create snake and load default
     snake = new Snake();
