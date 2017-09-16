@@ -5,7 +5,7 @@ var net = require('net'),
   http = require('http').Server(app),
   io = require('socket.io')(http),
   Game = require('./lib/game.js'),
-  log = require('./lib/logger.js') //import logger made bunyan
+  log = require('./lib/logger.js') //import bunyan logger
 
 var searchQueue = [] //all sockets that search a game
 var games = [] //has all active games
@@ -52,11 +52,13 @@ io.on('connection', function(socket) {
   //##################
   //#pong game events#
   //##################
+  //player chose his name so tell him gameObjects
   socket.on('join', function(data) {
     //save user name to socket
     socket.name = data
     socket.emit('joinRes', gameOptions)
   })
+  //player started to search for a game
   socket.on('search', function(data) {
     //TODO: check that name is unique
     log.debug(socket.name + " started Searching")

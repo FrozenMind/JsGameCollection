@@ -1,5 +1,6 @@
 var log = require('./logger.js')
 //Game File to create gameobject
+//opt = player pos
 var Game = function(socket1, socket2, opt) {
   this.s1 = socket1 //player1
   this.s2 = socket2 //player2
@@ -30,8 +31,8 @@ var Game = function(socket1, socket2, opt) {
       player2: this.s2.name
     }
   } //gameObjects contains both player, ball, score and name
-  //opt has lot of values
-  this.ballSpeed = opt.ballSpeed //speed ball is moving (xSpeed +ySpeed = ballSpeed)
+  //get options wher everything is
+  this.ballSpeed = opt.ballSpeed //speed ball is moving (xSpeed + ySpeed = ballSpeed)
   this.xSpeed = this.ballSpeed - 1
   this.ySpeed = 1
   this.width = opt.width //stage width
@@ -40,7 +41,6 @@ var Game = function(socket1, socket2, opt) {
   this.playerWidth = opt.playerWidth
   this.playerHeight = opt.playerHeight
   this.playerSpeed = opt.playerSpeed
-  //client will draw this one if it receives this
   this.active = false //is game running?
   this.run = undefined //game interval
 }
@@ -65,7 +65,7 @@ Game.prototype.isReady = function(name) {
         this.s2.emit('readyRes', false)
     }
 }
-//return gameObjects
+//return gameObjects, you can called it public but in my opinion a method looks cleaner
 Game.prototype.getGameObjects = function() {
   return this.gameObjects
 }
@@ -73,16 +73,17 @@ Game.prototype.getGameObjects = function() {
 Game.prototype.startInterval = function() {
   //start game
   this.active = true
-  //start an interval that send 30 times a sec the gameobjects
+  //start an interval that send 60 times a sec the gameobjects
   var that = this //save context to use in interval
   this.run = setInterval(function() {
     if (that.active) {
       that.update()
       that.broadcast('drawGame', that.getGameObjects())
       //check win
+      //TODO: max goal counter should be global via opt in constructor
       if (that.gameObjects.score.player1 >= 5 || that.gameObjects.score.player2 >= 5) {
         that.stopInterval()
-        //tell player whether he won or lost
+        //tell player whether he won or lost (true false)
         if (that.gameObjects.score.player1 >= 5) {
           that.s1.emit('done', true)
           that.s2.emit('done', false)
@@ -96,7 +97,7 @@ Game.prototype.startInterval = function() {
 }
 
 Game.prototype.stopInterval = function() {
-  //game is paused or stopped
+  //game becomes paused or stopped
   this.active = false
 }
 //show counter
@@ -109,7 +110,7 @@ Game.prototype.drawCounter = function() {
     count--
     //if 0 is send clearInterval
     if (count <= -1) {
-      that.broadcast('counter', -1) //-1 says delete label
+      that.broadcast('counter', -1) //-1 says delete label, counter is done
       //start game, game object will do the rest
       that.startInterval()
       clearInterval(counterInterval)
@@ -122,7 +123,7 @@ Game.prototype.isGoal = function() {
 }
 //update gameObjects
 Game.prototype.update = function() {
-  //TODO: ball movement does everything wrong --> FIX IT
+  //TODO: ball movement does everything wrong --> FIX IT, thought it works? test test test
   if (this.active) {
     //check goal
     if (this.gameObjects.ball.x < 0 || this.gameObjects.ball.x + this.ballSize > this.width) {
@@ -133,22 +134,23 @@ Game.prototype.update = function() {
         this.gameObjects.score.player2++
       }
       //TODO: call isGoal method
-      this.gameObjects.ball.x = 200 //TODO: DEL later
-      this.gameObjects.ball.y = 150 //TODO: DEL later
-      this.xSpeed = 4 //TODO: DEL later
-      this.ySpeed = 1 //TODO: DEL later
+      this.gameObjects.ball.x = 200 //TODO: (--> isGoal Method)
+      this.gameObjects.ball.y = 150 //TODO: (--> isGoal Method)
+      this.xSpeed = 4 //TODO: speed should start random (--> isGoal Method)
+      this.ySpeed = 1 //TODO:
     } else if (this.gameObjects.ball.y <= 0 || this.gameObjects.ball.y + this.ballSize >= this.height) {
       //ball hit top or bottom
       this.ySpeed *= -1
       this.gameObjects.ball.y = this.gameObjects.ball.y <= 0 ? this.ballSize : this.height - this.ballSize
     }
-    //check if ball hits player
+    //check if ball hits player1
     if (this.gameObjects.ball.x - this.ballSize <= this.gameObjects.player1.x + this.playerWidth && this.gameObjects.ball.x > this.gameObjects.player1.x) {
       if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player1.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player1.y + this.playerHeight) {
         var ss = (this.gameObjects.ball.y + this.ballSize - this.gameObjects.player1.y) / (this.playerHeight / 2) - 1
         this.ySpeed = Math.abs((this.ballSpeed - 1) * ss) > this.ballSpeed * (2 / 3) ? this.ballSpeed * (2 / 3) : (this.ballSpeed - 1) * ss
         this.xSpeed = this.ballSpeed - Math.abs(this.ySpeed)
       }
+      //check if ball hits player2
     } else if (this.gameObjects.ball.x + this.ballSize >= this.gameObjects.player2.x && this.gameObjects.ball.x < this.gameObjects.player2.x) {
       if (this.gameObjects.ball.y + this.ballSize > this.gameObjects.player2.y && this.gameObjects.ball.y - this.ballSize < this.gameObjects.player2.y + this.playerHeight) {
         var ss = (this.gameObjects.ball.y + this.ballSize - this.gameObjects.player2.y) / (this.playerHeight / 2) - 1
@@ -179,7 +181,7 @@ Game.prototype.update = function() {
 }
 //player has pressed a key
 Game.prototype.movePlayer = function(name, upOrDown, PressedOrReleased) {
-  //move player up = 38 or down = 40
+  //move player
   if (this.s1.name == name) {
     if (PressedOrReleased) {
       this.gameObjects.player1.move = true

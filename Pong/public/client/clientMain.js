@@ -14,14 +14,14 @@ var socket = undefined,
 $(document).ready(function() {
   init(); //connect to server and create socket events
 });
-//init stage childs which are needed in whole game
-function initStage(opt) {
+//init stage childs & attributs which are needed in whole game
+function initStage(opt) { //opt = options send by server when you connect the first time
   stage = new createjs.Stage('gameArea') //create stage
   stage.canvas.style.background = "#ffffff" //set stage bg
-  width = stage.canvas.width
-  height = stage.canvas.height
-  playerWidth = opt.playerWidth //TODO: move to serverside
-  playerHeight = opt.playerHeight //TODO: move to serverside
+  width = stage.canvas.width //get width
+  height = stage.canvas.height //get height
+  playerWidth = opt.playerWidth
+  playerHeight = opt.playerHeight
   //create objects to draw game
   rect_player1 = new createjs.Shape()
   rect_player1.x = playerWidth * 2
@@ -51,7 +51,7 @@ function initStage(opt) {
     socket.emit('ready', true)
 
   });
-  txt_status = new createjs.Text() //waiting for player or wait till player is ready or start search
+  txt_status = new createjs.Text() //shows state like wait for opponent
   txt_status.set({
     text: "Start Search For Opponent",
     font: "12px Arial",
@@ -77,7 +77,6 @@ function initStage(opt) {
     x: width / 2,
     y: 50
   })
-  //default is search button active
   stage.update() //update stage once
 }
 //add button to search for a game on stage
@@ -87,13 +86,13 @@ function showSearchButton() {
   stage.addChild(txt_status)
   stage.update()
 }
-//init all events (document and socket)
+//init events for document and socket
 function init() {
   socket = io() //connect to server
-  //add key event listener
+  //add key event listener (functions are at bottom)
   document.addEventListener("keydown", keyDown, false)
   document.addEventListener("keyup", keyUp, false)
-  //start button
+  //start button, needed at first load to get them name
   $("#startButton").click(function() {
     //tell server that somebody connected
     if ($("#nameInput").val() != "") {
@@ -104,14 +103,14 @@ function init() {
       $("#startButton").remove()
     }
   })
-  //joinRes returns gameObject data
+  //joinRes: init stage and show search button
   socket.on('joinRes', function(data) {
     initStage(data) //init stage objects
     showSearchButton()
   })
-  //draw objects (players, ball and score
+  //draw objects (players, ball and score)
   socket.on('drawGame', function(data) {
-    //server will send these in interval based on server tick
+    //server will send all obejcts in interval based on server tick
     rect_player1.x = data.player1.x
     rect_player1.y = data.player1.y
     rect_player2.x = data.player2.x
@@ -119,7 +118,7 @@ function init() {
     rect_ball.x = data.ball.x
     rect_ball.y = data.ball.y
     txt_score.text = data.name.player1 + " - " + data.score.player1 + " : " + data.score.player2 + " - " + data.name.player2
-    console.log("Game updated")
+    //console.log("Game updated")
     stage.update()
   })
   //draw counter
@@ -150,7 +149,7 @@ function init() {
       //opponent found, show ready button
       console.log('Enemy found.')
       stage.removeChild(btn_search)
-      stage.removeChild(txt_status)
+      stage.removeChild(txt_status) //TODO: try if necesarry or just replace the text??
       txt_status.text = "Press to ready"
       stage.addChild(btn_ready)
       stage.addChild(txt_status)
@@ -178,8 +177,15 @@ function init() {
       stage.update()
     }
   })
+  //game is done
   socket.on('done', function(data) {
     socket.emit('doneRes', true)
+    //TODO: show you won or lost wait few secs
+    if (data) {
+      //you won
+    } else {
+      //you lost
+    }
     stage.removeAllChildren()
     stage.update()
     showSearchButton()

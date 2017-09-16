@@ -1,5 +1,5 @@
 var bunyan = require('bunyan')
-//create logger --> info and error is logged into a file
+//create logger --> warn and error is logged into a file
 var log = bunyan.createLogger({
   name: 'Logger',
   streams: [{
