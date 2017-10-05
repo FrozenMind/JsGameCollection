@@ -6,7 +6,7 @@ function Snake() {
   this.direction = 4; //1=up, 2=right, 3=down, 4=left
   this.speed = 15; //speed can be max fps count
   this.readyToMove = true
-  this.startAmount = 7 //amout of elements in the start snake
+  this.startAmount = 3 //amout of elements in the start snake
 }
 
 Snake.prototype.loadDefaultSnake = function() {
@@ -30,18 +30,22 @@ Snake.prototype.loadDefaultSnake = function() {
   }
   this.direction = 4;
 }
-
+//add new rect to snake
 Snake.prototype.addRect = function() {
   let tempRect = new createjs.Shape()
   tempRect.graphics.setStrokeStyle(1).beginStroke("#000")
   tempRect.graphics.beginFill(this.color).drawRect(0, 0, this.size, this.size);
+  tempRect.alpha = 0
+  createjs.Tween.get(tempRect).to({
+    alpha: 1
+  }, 2000)
   // first set is out of bounds so that no flickr appears, move method will set it to the end
   tempRect.x = -this.size;
   tempRect.y = -this.size;
   this.rects.push(tempRect)
   stage.addChild(tempRect)
 }
-
+//move all parts of snake
 Snake.prototype.move = function() {
   //every rect should be set to the one before him
   for (i = this.rects.length - 1; i >= 1; i--) {
